@@ -34,21 +34,21 @@ def read_docx(file_path: str) -> list:
 
 
 def doc_converter(docx_folder) -> None:
-    result_data = {}
     lines = []
     for file in glob.glob(os.path.join(docx_folder, 'Ozge*.docx')):
         doc_lines = read_docx(file)
-        # print('lines', lines)
+        result_data = {}
         # filtered_lines = filter_lines_with_special_chars(lines)  # No need to join the lines
         result_data['id'] = str(uuid4())
+        result_data['date'] = extract_date_from_filename(file)
         result_data['lines'] = split_by_special_chars(doc_lines)
         lines.append(result_data)
         
     # Convert the data to JSON format
     json_data = json.dumps(lines, indent=4)
-    # print('json',word_lists)
     return json_data
 
+#TODO check if there is a better way instead of using regex
 def split_by_special_chars(lines: list) -> list:
     return [word for line in lines for word in re.split(r'(?<!\w)[^a-zA-Z0-9\s\']|[^a-zA-Z0-9\s\'](?!\w)|/', line) if word]
 #   
@@ -59,3 +59,10 @@ def split_by_special_chars(lines: list) -> list:
     #             list.append(word)
     # return list
 #
+def extract_date_from_filename(filename):
+    base_name = os.path.basename(filename)
+    print(base_name, os.path.splitext(base_name))
+    name_without_extension = os.path.splitext(base_name)[0]
+    parts = name_without_extension.split('_')
+    return '_'.join(parts[1:]) 
+
