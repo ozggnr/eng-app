@@ -1,5 +1,4 @@
-import os
-from sqlalchemy import create_engine
+from endpoints import app
+from database import metadata, engine
 
-DATABASE_URL = os.environ.get('DATABASE_URL')
-engine = create_engine(DATABASE_URL)
+metadata.create_all(engine)
